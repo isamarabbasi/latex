@@ -7,10 +7,10 @@ Everything runs locally. The only network calls are to OpenAI, Overleaf, and Goo
 ## What you'll need
 
 1. **Node.js** 18+ — https://nodejs.org
-2. **An OpenAI API key** — https://platform.openai.com/api-keys (entered in the browser, stored only in your browser's localStorage)
-3. **A Google Cloud OAuth client** (free) — for writing your cover letter into a Google Doc
-4. **An Overleaf project** with Git access — for the resume LaTeX file
-5. **Git** with credentials cached for Overleaf (Git Credential Manager on Windows handles this on first push)
+2. **Git** installed (Git Credential Manager on Windows is included by default)
+3. **An OpenAI API key** — https://platform.openai.com/api-keys (entered in the browser, stored only in your browser's localStorage)
+4. **A Google Cloud OAuth client** (free) — for writing your cover letter into a Google Doc
+5. **An Overleaf account with a paid plan** that includes Git integration (Standard / Professional / Premium) — the free tier does NOT support Git. See https://www.overleaf.com/user/subscription/plans
 
 ## One-time setup
 
@@ -51,15 +51,46 @@ If you want to include a profile photo on the resume, place it at `.overleaf-rep
    GOOGLE_DOC_ID=...
    ```
 
-### 4. Set up your Overleaf project
+### 4. Set up your Overleaf project + Git integration
 
-1. Create a new Overleaf project (or use an existing one with the LaTeX template you want).
-2. Project menu -> Sync -> **Git** -> copy the Git URL (looks like `https://git@git.overleaf.com/<id>`).
-3. Paste it into `.env`:
+> **Heads up:** Overleaf's Git integration is a **paid feature** (Overleaf Premium / Standard / Professional). The free tier won't work. Check at https://www.overleaf.com/user/subscription/plans
+
+#### 4a. Create the project
+
+1. Create a new Overleaf project (or open an existing one) with the LaTeX template you want as your resume.
+2. Inside the project: **Menu** (top-left) -> under **Sync**, click **Git**.
+3. Copy the Git URL shown — it looks like `https://git@git.overleaf.com/<project-id>`.
+4. Paste it into `.env`:
    ```
-   OVERLEAF_GIT_URL=https://git@git.overleaf.com/<id>
+   OVERLEAF_GIT_URL=https://git@git.overleaf.com/<project-id>
    ```
-4. The first time the server pushes, Git will prompt for your Overleaf username/password. Use your Overleaf email + the Git token from Overleaf Account Settings -> Git integration. Git Credential Manager will remember it.
+
+#### 4b. Generate a Git authentication token
+
+Overleaf's Git endpoint does **not** accept your account password. You need a token:
+
+1. Go to https://www.overleaf.com/user/settings
+2. Scroll to **Git integration** (or **Git authentication tokens**) -> **Create token**.
+3. Give it a name (e.g. "resume-optimizer") and copy the token — you'll only see it once.
+
+#### 4c. Cache the token in Git (one-time)
+
+The first time the server tries to clone/push, Git will prompt for credentials in a popup:
+
+- **Username:** `git` (literally the word "git")
+- **Password:** paste the token from step 4b
+
+On Windows, Git Credential Manager will remember it automatically. To verify it works *before* running the server, open a terminal and try a manual clone:
+
+```bash
+git clone <your OVERLEAF_GIT_URL> /tmp/overleaf-test
+```
+
+If the clone succeeds, the credential is cached and the server will reuse it. If it fails, double-check that your Overleaf plan supports Git and that your token is valid.
+
+#### How the tool uses this
+
+When you click **Send to Overleaf** in the browser, the server writes your generated LaTeX to `.overleaf-repo/sample.tex`, commits it, and `git push`es to your Overleaf project — at which point your Overleaf editor shows the new resume.
 
 ### 5. Run
 
@@ -89,4 +120,6 @@ The repo never ships any of these. `.gitignore` is set up to keep `.env`, `.goog
 - **"GOOGLE_CLIENT_ID / GOOGLE_CLIENT_SECRET not set"** — you missed step 2. Check `.env`.
 - **"Placeholder [COVER_LETTER_BODY] not found"** — your Google Doc doesn't contain that exact text in the body. Add it back (only needed for the first save; afterwards a named range tracks the location).
 - **Overleaf push hangs or fails auth** — open a terminal and try `git clone <your-OVERLEAF_GIT_URL>` manually so Git Credential Manager prompts and stores creds. Then restart the server.
+- **"Authentication failed" on Overleaf** — make sure (1) you're on a paid Overleaf plan with Git integration, (2) you used the **Git token** as the password (not your account password), and (3) the username you entered was literally `git`. Tokens are managed at https://www.overleaf.com/user/settings under "Git integration".
+- **Wrong cached Overleaf credentials** — on Windows, open Credential Manager (search "Credential Manager" in Start), find the entry for `git.overleaf.com`, and delete it. Then retry — Git will prompt again.
 - **OAuth redirect URI mismatch** — the URI in your Google Cloud OAuth client must exactly match `GOOGLE_REDIRECT_URI` in `.env` (default `http://localhost:3001/auth/callback`).
