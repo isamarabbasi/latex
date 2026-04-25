@@ -1,0 +1,1003 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resume Optimizer</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: #0f172a;
+            color: #e2e8f0;
+            min-height: 100vh;
+        }
+        .header {
+            background: #1e293b;
+            border-bottom: 1px solid #334155;
+            padding: 16px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .header h1 {
+            font-size: 20px;
+            font-weight: 600;
+            color: #f1f5f9;
+        }
+        .header-actions {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-primary {
+            background: #3b82f6;
+            color: white;
+        }
+        .btn-primary:hover { background: #2563eb; }
+        .btn-primary:disabled {
+            background: #1e40af;
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        .btn-secondary {
+            background: #334155;
+            color: #e2e8f0;
+        }
+        .btn-secondary:hover { background: #475569; }
+        .btn-success {
+            background: #059669;
+            color: white;
+        }
+        .btn-success:hover { background: #047857; }
+        .btn-purple {
+            background: #7c3aed;
+            color: white;
+        }
+        .btn-purple:hover { background: #6d28d9; }
+        .btn-icon {
+            background: none;
+            border: 1px solid #475569;
+            color: #94a3b8;
+            padding: 6px 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+        }
+        .btn-icon:hover { border-color: #3b82f6; color: #3b82f6; }
+
+        .main {
+            display: flex;
+            height: calc(100vh - 101px);
+        }
+        .panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            border-right: 1px solid #334155;
+        }
+        .panel:last-child { border-right: none; }
+        .panel-header {
+            padding: 12px 16px;
+            background: #1e293b;
+            border-bottom: 1px solid #334155;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            min-height: 44px;
+        }
+        .panel-header h2 {
+            font-size: 14px;
+            font-weight: 600;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .panel-body {
+            flex: 1;
+            padding: 0;
+            overflow: hidden;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+        textarea {
+            width: 100%;
+            height: 100%;
+            background: #0f172a;
+            color: #e2e8f0;
+            border: none;
+            padding: 16px;
+            font-family: 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            resize: none;
+            outline: none;
+        }
+        textarea::placeholder { color: #475569; }
+        textarea:focus { background: #111827; }
+
+        /* Modal */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.6);
+            z-index: 100;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-overlay.active { display: flex; }
+        .modal {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 800px;
+            max-height: 85vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .modal-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid #334155;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .modal-header h2 { font-size: 16px; }
+        .modal-body {
+            padding: 20px;
+            overflow-y: auto;
+            flex: 1;
+        }
+        .modal-body textarea {
+            background: #0f172a;
+            border: 1px solid #334155;
+            border-radius: 8px;
+            height: 400px;
+            padding: 12px;
+        }
+        .modal-body textarea:focus { border-color: #3b82f6; }
+        .modal-footer {
+            padding: 12px 20px;
+            border-top: 1px solid #334155;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+        .close-btn {
+            background: none;
+            border: none;
+            color: #94a3b8;
+            font-size: 20px;
+            cursor: pointer;
+        }
+        .close-btn:hover { color: #e2e8f0; }
+
+        /* API key input */
+        .api-key-bar {
+            padding: 10px 16px;
+            background: #1e293b;
+            border-bottom: 1px solid #334155;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .api-key-bar input {
+            flex: 1;
+            background: #0f172a;
+            border: 1px solid #334155;
+            border-radius: 6px;
+            padding: 8px 12px;
+            color: #e2e8f0;
+            font-size: 13px;
+            outline: none;
+        }
+        .api-key-bar input:focus { border-color: #3b82f6; }
+        .api-key-bar label {
+            font-size: 13px;
+            color: #94a3b8;
+            white-space: nowrap;
+        }
+
+        /* Status */
+        .status-bar {
+            padding: 8px 16px;
+            font-size: 13px;
+            display: none;
+        }
+        .status-bar.active { display: block; }
+        .status-bar.loading {
+            background: #172554;
+            color: #60a5fa;
+        }
+        .status-bar.error {
+            background: #450a0a;
+            color: #fca5a5;
+        }
+        .status-bar.success {
+            background: #052e16;
+            color: #86efac;
+        }
+
+        /* Spinner */
+        .spinner {
+            display: inline-block;
+            width: 14px;
+            height: 14px;
+            border: 2px solid #60a5fa;
+            border-top-color: transparent;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin-right: 8px;
+            vertical-align: middle;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .badge {
+            font-size: 11px;
+            padding: 2px 8px;
+            border-radius: 10px;
+            background: #059669;
+            color: white;
+        }
+        .badge.empty {
+            background: #dc2626;
+        }
+
+        /* Model selector */
+        .model-select {
+            background: #0f172a;
+            border: 1px solid #334155;
+            border-radius: 6px;
+            padding: 6px 10px;
+            color: #e2e8f0;
+            font-size: 13px;
+            outline: none;
+            cursor: pointer;
+        }
+        .model-select:focus { border-color: #3b82f6; }
+
+        /* Keyword match panel */
+        .keyword-panel {
+            border-top: 1px solid #334155;
+            background: #1e293b;
+            max-height: 180px;
+            overflow-y: auto;
+            display: none;
+        }
+        .keyword-panel.active { display: block; }
+        .keyword-panel-header {
+            padding: 10px 16px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #94a3b8;
+            border-bottom: 1px solid #334155;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            background: #1e293b;
+        }
+        .keyword-list {
+            padding: 10px 16px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+        .keyword-tag {
+            font-size: 12px;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-weight: 500;
+        }
+        .keyword-tag.found {
+            background: #052e16;
+            color: #86efac;
+            border: 1px solid #059669;
+        }
+        .keyword-tag.missing {
+            background: #450a0a;
+            color: #fca5a5;
+            border: 1px solid #dc2626;
+        }
+        .match-score {
+            font-size: 14px;
+            font-weight: 700;
+        }
+        .match-score.good { color: #86efac; }
+        .match-score.ok { color: #fbbf24; }
+        .match-score.bad { color: #fca5a5; }
+
+        /* Modal hint text */
+        .hint {
+            margin-bottom: 12px;
+            color: #94a3b8;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        /* Output tabs */
+        .output-tabs {
+            display: flex;
+            gap: 4px;
+            align-items: center;
+        }
+        .tab-btn {
+            padding: 6px 12px;
+            background: #334155;
+            color: #94a3b8;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+        .tab-btn:hover { background: #475569; }
+        .tab-btn.active {
+            background: #3b82f6;
+            color: white;
+        }
+        .textarea-container {
+            display: none;
+            height: 100%;
+            flex: 1;
+        }
+        .textarea-container.active {
+            display: flex;
+            flex-direction: column;
+        }
+        .textarea-container textarea {
+            flex: 1;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Resume Optimizer</h1>
+        <div class="header-actions">
+            <select class="model-select" id="modelSelect">
+                <option value="gpt-4o">GPT-4o</option>
+                <option value="gpt-4o-mini">GPT-4o Mini (faster)</option>
+                <option value="gpt-4.1">GPT-4.1</option>
+                <option value="gpt-4.1-mini">GPT-4.1 Mini</option>
+            </select>
+            <button class="btn btn-secondary" onclick="openModal('baseResumeModal')">
+                Base Resume <span id="resumeBadge" class="badge empty">Not Set</span>
+            </button>
+            <button class="btn btn-purple" onclick="openModal('knowledgeBaseModal')">
+                Knowledge Base <span id="kbBadge" class="badge empty">Not Set</span>
+            </button>
+            <button class="btn btn-primary" id="generateBtn" onclick="generate()">
+                Generate Optimized Resume
+            </button>
+        </div>
+    </div>
+
+    <div class="api-key-bar">
+        <label>OpenAI API Key:</label>
+        <input type="password" id="apiKey" placeholder="sk-..." />
+        <button class="btn-icon" onclick="toggleKeyVisibility()">Show</button>
+        <button class="btn-icon" onclick="saveApiKey()">Save</button>
+    </div>
+
+    <div id="statusBar" class="status-bar"></div>
+
+    <div class="main">
+        <div class="panel">
+            <div class="panel-header">
+                <h2>Job Description</h2>
+                <button class="btn-icon" onclick="document.getElementById('jdInput').value=''" title="Clear">Clear</button>
+            </div>
+            <div class="panel-body">
+                <textarea id="jdInput" placeholder="Paste the job description here..."></textarea>
+            </div>
+        </div>
+        <div class="panel">
+            <div class="panel-header">
+                <div class="output-tabs">
+                    <h2 style="margin-right:12px;">Output</h2>
+                    <button class="tab-btn active" onclick="switchTab('resume')" id="resumeTab">Resume</button>
+                    <button class="tab-btn" onclick="switchTab('coverLetter')" id="coverLetterTab">Cover Letter</button>
+                </div>
+                <div style="display:flex;gap:6px;flex-wrap:wrap;">
+                    <button class="btn-icon" onclick="copyOutput()" title="Copy to clipboard">Copy</button>
+                    <button class="btn-icon" onclick="downloadOutput()" title="Download file">Download</button>
+                    <button class="btn-icon" onclick="sendToOverleaf()" id="overleafBtn" title="Send to Overleaf">📤 Overleaf</button>
+                    <button class="btn-icon" onclick="openOverleaf()" id="openBtn" title="Open Overleaf project">📂 Open</button>
+                    <button class="btn-icon" onclick="saveCoverLetter()" id="googleBtn" title="Save cover letter">💾 Save</button>
+                </div>
+            </div>
+            <div class="panel-body">
+                <div id="resumeContainer" class="textarea-container active">
+                    <textarea id="output" placeholder="Optimized resume will appear here..." readonly></textarea>
+                </div>
+                <div id="coverLetterContainer" class="textarea-container">
+                    <textarea id="coverLetterOutput" placeholder="Cover letter will appear here..." readonly></textarea>
+                </div>
+            </div>
+            <div class="keyword-panel" id="keywordPanel">
+                <div class="keyword-panel-header">
+                    <span>ATS Keyword Match</span>
+                    <span class="match-score" id="matchScore"></span>
+                </div>
+                <div class="keyword-list" id="keywordList"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Base Resume Modal -->
+    <div class="modal-overlay" id="baseResumeModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2>Base Resume (LaTeX)</h2>
+                <button class="close-btn" onclick="closeModal('baseResumeModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p class="hint">
+                    Paste your current resume LaTeX code below. This will be saved in your browser and used as the base for all optimizations.
+                </p>
+                <textarea id="baseResumeInput" placeholder="Paste your full LaTeX resume code here..."></textarea>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('baseResumeModal')">Cancel</button>
+                <button class="btn btn-success" onclick="saveBaseResume()">Save Base Resume</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Knowledge Base Modal -->
+    <div class="modal-overlay" id="knowledgeBaseModal">
+        <div class="modal" style="max-width:900px;">
+            <div class="modal-header">
+                <h2>Knowledge Base</h2>
+                <button class="close-btn" onclick="closeModal('knowledgeBaseModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p class="hint">
+                    Write details about yourself that are NOT in your resume but could be relevant for tailoring.
+                    The AI will use this to better personalize bullet points with real information.<br><br>
+                    <strong>Include things like:</strong> project details and what you actually did, relevant coursework with topics covered,
+                    side projects, hackathons, volunteer work, tools you've used but didn't list, soft skills with examples,
+                    any certifications in progress, or anything else you'd want a recruiter to know.
+                </p>
+                <textarea id="knowledgeBaseInput" placeholder="Example:
+
+## Projects
+- Crop Weed Classification (FYP): Built a CNN model using TensorFlow/Keras to classify crop vs weed from drone images. Trained on 5000+ images, achieved 94% accuracy. Integrated with Raspberry Pi for real-time field detection. Used Python, OpenCV, and MQTT for communication.
+
+## Relevant Coursework
+- Control Systems Engineering: PID controllers, state-space models, Bode plots, Nyquist stability
+- Power Electronics: DC-DC converters, inverters, motor drives
+- Signal Processing: FFT, filtering, MATLAB simulations
+- Embedded Systems (current MSc): RTOS, bare-metal programming, sensor interfacing
+
+## Extra Skills & Experience
+- Built a home automation system using ESP32 + MQTT + Node-RED
+- Familiar with Docker basics from deploying Grafana dashboards
+- Participated in IEEE robotics competition 2022
+- Can read and understand electrical schematics and P&ID diagrams
+
+## About Me
+- Quick learner, adapted to Siemens TIA Portal with no prior experience in 2 weeks
+- Enjoy hands-on lab work and experimental validation
+- Currently improving German (targeting B1 by end of 2026)"></textarea>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('knowledgeBaseModal')">Cancel</button>
+                <button class="btn btn-success" onclick="saveKnowledgeBase()">Save Knowledge Base</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Track active tab
+        let activeTab = 'resume';
+
+        // Load saved data on startup
+        window.addEventListener('DOMContentLoaded', () => {
+            const savedKey = localStorage.getItem('openai_api_key');
+            if (savedKey) document.getElementById('apiKey').value = savedKey;
+
+            const savedModel = localStorage.getItem('selected_model');
+            if (savedModel) document.getElementById('modelSelect').value = savedModel;
+
+            updateBadge('resumeBadge', !!localStorage.getItem('base_resume'));
+            updateBadge('kbBadge', !!localStorage.getItem('knowledge_base'));
+
+            document.getElementById('modelSelect').addEventListener('change', (e) => {
+                localStorage.setItem('selected_model', e.target.value);
+            });
+        });
+
+        function updateBadge(id, hasSaved) {
+            const badge = document.getElementById(id);
+            if (hasSaved) {
+                badge.textContent = 'Saved';
+                badge.className = 'badge';
+            } else {
+                badge.textContent = 'Not Set';
+                badge.className = 'badge empty';
+            }
+        }
+
+        function switchTab(tab) {
+            activeTab = tab;
+
+            // Update tab buttons
+            document.getElementById('resumeTab').classList.remove('active');
+            document.getElementById('coverLetterTab').classList.remove('active');
+            document.getElementById(tab + 'Tab').classList.add('active');
+
+            // Update containers
+            document.getElementById('resumeContainer').classList.remove('active');
+            document.getElementById('coverLetterContainer').classList.remove('active');
+            document.getElementById(tab + 'Container').classList.add('active');
+
+            // Hide keyword panel if showing cover letter
+            if (tab === 'coverLetter') {
+                document.getElementById('keywordPanel').classList.remove('active');
+            }
+        }
+
+        function saveApiKey() {
+            const key = document.getElementById('apiKey').value.trim();
+            if (key) {
+                localStorage.setItem('openai_api_key', key);
+                showStatus('API key saved.', 'success');
+            }
+        }
+
+        function toggleKeyVisibility() {
+            const input = document.getElementById('apiKey');
+            const btn = input.nextElementSibling;
+            if (input.type === 'password') {
+                input.type = 'text';
+                btn.textContent = 'Hide';
+            } else {
+                input.type = 'password';
+                btn.textContent = 'Show';
+            }
+        }
+
+        function openModal(id) {
+            if (id === 'baseResumeModal') {
+                document.getElementById('baseResumeInput').value = localStorage.getItem('base_resume') || '';
+            } else if (id === 'knowledgeBaseModal') {
+                document.getElementById('knowledgeBaseInput').value = localStorage.getItem('knowledge_base') || '';
+            }
+            document.getElementById(id).classList.add('active');
+        }
+
+        function closeModal(id) {
+            document.getElementById(id).classList.remove('active');
+        }
+
+        function saveBaseResume() {
+            const code = document.getElementById('baseResumeInput').value.trim();
+            if (code) {
+                localStorage.setItem('base_resume', code);
+                updateBadge('resumeBadge', true);
+                showStatus('Base resume saved!', 'success');
+            } else {
+                localStorage.removeItem('base_resume');
+                updateBadge('resumeBadge', false);
+            }
+            closeModal('baseResumeModal');
+        }
+
+        function saveKnowledgeBase() {
+            const content = document.getElementById('knowledgeBaseInput').value.trim();
+            if (content) {
+                localStorage.setItem('knowledge_base', content);
+                updateBadge('kbBadge', true);
+                showStatus('Knowledge base saved!', 'success');
+            } else {
+                localStorage.removeItem('knowledge_base');
+                updateBadge('kbBadge', false);
+            }
+            closeModal('knowledgeBaseModal');
+        }
+
+        function showStatus(msg, type) {
+            const bar = document.getElementById('statusBar');
+            bar.className = 'status-bar active ' + type;
+            if (type === 'loading') {
+                bar.innerHTML = '<span class="spinner"></span>' + msg;
+            } else {
+                bar.textContent = msg;
+            }
+            if (type !== 'loading') {
+                setTimeout(() => { bar.className = 'status-bar'; }, 4000);
+            }
+        }
+
+        // Extract important keywords from a job description
+        function extractKeywords(jd) {
+            const text = jd.toLowerCase();
+            // Common filler words to ignore
+            const stopWords = new Set([
+                'the','a','an','and','or','but','in','on','at','to','for','of','with','by','from','as','is','was','are','were',
+                'be','been','being','have','has','had','do','does','did','will','would','shall','should','may','might','can',
+                'could','about','above','after','again','against','all','am','any','because','before','below','between','both',
+                'during','each','few','further','get','got','here','how','if','into','it','its','just','more','most','no','nor',
+                'not','now','only','other','our','out','over','own','same','so','some','such','than','that','their','them','then',
+                'there','these','they','this','those','through','too','under','until','up','very','we','what','when','where',
+                'which','while','who','whom','why','you','your','able','also','including','within','across','along','among',
+                'around','become','meet','new','well','work','working','based','using','related','relevant','strong','good',
+                'offer','offers','join','learn','take','feel','believe','every','stage','careers','make','company','culture',
+                'embraces','bold','vision','passion','tackling','demanding','challenges','industry','first','solutions',
+                'people','creative','innovative','successful','sense','belonging','employees','develop','world','class',
+                'customers','countries','approximately','delivering','groundbreaking','reliable','insights','overview',
+                'responsibilities','qualifications','description','requirements','experience','knowledge','skills',
+                'years','year','must','required','preferred','minimum','looking','seeking','ideal','candidate','role',
+                'position','job','team','support','ensure','provide','ability','understanding','interest','methods',
+                'hands','close','flexible','hours','easily','combined','studies','enrolled','student','comparable',
+                'course','study','advantage','structured','practical','experimental','communication'
+            ]);
+
+            // Extract meaningful multi-word phrases and single words
+            const phrases = [];
+
+            // Look for specific technical terms and multi-word phrases
+            const techPatterns = [
+                /\bev\s+charging\b/gi, /\bsmart\s+charging\b/gi, /\bgrid\s+integration\b/gi,
+                /\bgrid\s+codes?\b/gi, /\bgridedge\b/gi, /\bcharging\s+stations?\b/gi,
+                /\bcharging\s+systems?\b/gi, /\btest\s+scenarios?\b/gi, /\btest\s+cases?\b/gi,
+                /\blaboratory\s+setups?\b/gi, /\bmeasuring\s+instruments?\b/gi,
+                /\bcontrol\s+engineering\b/gi, /\benergy\s+systems?\b/gi,
+                /\bgrid\s+modernization\b/gi, /\belectrical\s+engineering\b/gi,
+                /\bcomputer\s+science\b/gi, /\br&d\b/gi, /\bproduct\s+planning\b/gi,
+                /\bmatlab\b/gi, /\bsimulink\b/gi, /\bpython\b/gi, /\bc\+\+\b/g, /\bc#\b/gi,
+                /\bsimulation\b/gi, /\bmodeling\b/gi, /\bmodelling\b/gi,
+                /\bnorms?\b/gi, /\bstandards?\b/gi, /\bvalidation\b/gi, /\bdocumentation\b/gi,
+                /\bimplementation\b/gi, /\bautomotive\b/gi, /\b5g\b/gi, /\baerospace\b/gi,
+                /\bdefense\b/gi, /\bsemiconductor\b/gi, /\bprototyping\b/gi,
+                /\belectronic\s+design\b/gi, /\btest\s+systems?\b/gi,
+            ];
+
+            const foundPhrases = new Set();
+            for (const pattern of techPatterns) {
+                const matches = text.match(pattern);
+                if (matches) {
+                    for (const m of matches) {
+                        const clean = m.trim().toLowerCase();
+                        if (clean.length > 1) foundPhrases.add(clean);
+                    }
+                }
+            }
+
+            // Also extract standalone meaningful words
+            const words = text.replace(/[^a-z0-9#+\-\/]/gi, ' ').split(/\s+/);
+            for (const w of words) {
+                const clean = w.toLowerCase().replace(/[.,;:!?()]/g, '');
+                if (clean.length > 3 && !stopWords.has(clean) && !/^\d+$/.test(clean)) {
+                    // Only keep words that seem technical or meaningful
+                    const techWords = new Set([
+                        'charging','simulation','modeling','modelling','matlab','simulink','python',
+                        'norms','standards','validation','documentation','implementation','testing',
+                        'development','integration','analysis','comparison','software','hardware',
+                        'experimental','laboratory','instruments','electrical','energy','automotive',
+                        'semiconductor','aerospace','defense','prototyping','design','quantum',
+                        'gridedge','firmware','embedded','sensors','automation','scada','plc',
+                        'profibus','modbus','ethernet','grafana','jira','linux','docker',
+                        'programming','engineering','research','technical','assessments'
+                    ]);
+                    if (techWords.has(clean)) {
+                        foundPhrases.add(clean);
+                    }
+                }
+            }
+
+            return [...foundPhrases];
+        }
+
+        function runKeywordMatch(jd, resumeLatex) {
+            const keywords = extractKeywords(jd);
+            if (keywords.length === 0) return;
+
+            const resumeText = resumeLatex.toLowerCase();
+            let found = 0;
+            const results = [];
+
+            for (const kw of keywords) {
+                const isFound = resumeText.includes(kw);
+                if (isFound) found++;
+                results.push({ keyword: kw, found: isFound });
+            }
+
+            // Sort: missing first, then found
+            results.sort((a, b) => a.found - b.found);
+
+            const total = keywords.length;
+            const pct = total > 0 ? Math.round((found / total) * 100) : 0;
+
+            const panel = document.getElementById('keywordPanel');
+            const list = document.getElementById('keywordList');
+            const score = document.getElementById('matchScore');
+
+            list.innerHTML = results.map(r =>
+                `<span class="keyword-tag ${r.found ? 'found' : 'missing'}">${r.keyword}</span>`
+            ).join('');
+
+            score.textContent = `${found}/${total} (${pct}%)`;
+            score.className = 'match-score ' + (pct >= 70 ? 'good' : pct >= 40 ? 'ok' : 'bad');
+            panel.classList.add('active');
+        }
+
+        async function generate() {
+            const apiKey = document.getElementById('apiKey').value.trim();
+            const baseResume = localStorage.getItem('base_resume');
+            const knowledgeBase = localStorage.getItem('knowledge_base') || '';
+            const jd = document.getElementById('jdInput').value.trim();
+            const model = document.getElementById('modelSelect').value;
+
+            if (!apiKey) return showStatus('Please enter your OpenAI API key.', 'error');
+            if (!baseResume) return showStatus('Please save your base resume first (click "Base Resume" button).', 'error');
+            if (!jd) return showStatus('Please paste a job description.', 'error');
+
+            const btn = document.getElementById('generateBtn');
+            btn.disabled = true;
+            btn.textContent = 'Generating...';
+            document.getElementById('output').value = '';
+            document.getElementById('coverLetterOutput').value = '';
+            document.getElementById('keywordPanel').classList.remove('active');
+            showStatus('Generating optimized resume and cover letter... This may take 30-60 seconds.', 'loading');
+
+            const systemPrompt = `You are an expert resume optimizer and career coach. You take a base resume in LaTeX, a knowledge base of extra candidate details, and a job description — then produce:
+1. A highly tailored resume in LaTeX
+2. A compelling cover letter in plain text
+
+RESUME RULES:
+
+STRUCTURE & FORMAT:
+1. Keep the EXACT same LaTeX template: document class, packages, page geometry, fonts, colors, column layout, section order, and formatting commands. Do NOT add, remove, or rearrange sections.
+2. Keep the resume the same length (1-2 pages). Do not bloat it.
+
+CHRONOLOGICAL ORDER — CRITICAL:
+3. NEVER reorder experiences. Keep them in the EXACT same order as the base resume (most recent first). This is reverse-chronological order and recruiters/ATS expect it.
+
+CONTENT:
+4. REWRITE bullet points aggressively to highlight relevance to the job. Use action verbs and weave in keywords from the job description naturally.
+5. Use the knowledge base to ADD real details, metrics, and context that make bullet points stronger. For example, if the knowledge base mentions specific technology or achievements relevant to the job, incorporate them.
+6. You may add 1-2 new bullet points to a role IF the knowledge base contains relevant real experience that directly matches the job description.
+7. Tailor the tagline/headline to match the job's core focus areas.
+8. Reorder skills WITHIN each category to put the most JD-relevant ones first.
+9. NEVER fabricate experiences, companies, job titles, degrees, or metrics.
+10. You may add UP TO 2 specific technical skills that are explicitly required in the job AND closely related to skills the candidate already has.
+
+COVER LETTER RULES:
+
+1. Write in plain text (no markdown, no HTML).
+2. Create a professional, compelling cover letter tailored to the specific job.
+3. Use the job description to identify key requirements and mirror them in the letter.
+4. Draw from the base resume and knowledge base to provide specific examples and achievements.
+5. Format as:
+   - Opening paragraph: Express interest in the specific role and company
+   - 2-3 Body paragraphs: Highlight relevant skills, experiences, and achievements that match the job
+   - Closing paragraph: Strong call to action and thanks
+6. Keep it concise (250-350 words).
+7. Do NOT use placeholders like [Company], [Your Name], or [Date]. Instead, reference "the company" or "this position" generically, or leave space for the user to fill in.
+8. Make it personal and authentic, not generic.
+
+OUTPUT FORMAT:
+Return your response in this exact format with clear separators:
+
+===RESUME_START===
+[Complete LaTeX resume code here - no markdown backticks]
+===RESUME_END===
+
+===COVER_LETTER_START===
+[Cover letter text here]
+===COVER_LETTER_END===`;
+
+            let userPrompt = `BASE RESUME (LaTeX):
+---
+${baseResume}
+---`;
+
+            if (knowledgeBase) {
+                userPrompt += `
+
+CANDIDATE KNOWLEDGE BASE (extra details about projects, coursework, skills):
+---
+${knowledgeBase}
+---`;
+            }
+
+            userPrompt += `
+
+JOB DESCRIPTION:
+---
+${jd}
+---
+
+Generate both the optimized LaTeX resume and cover letter using the exact output format specified in the system prompt.`;
+
+            try {
+                const response = await fetch('https://api.openai.com/v1/chat/completions', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${apiKey}`
+                    },
+                    body: JSON.stringify({
+                        model: model,
+                        messages: [
+                            { role: 'system', content: systemPrompt },
+                            { role: 'user', content: userPrompt }
+                        ],
+                        temperature: 0.4,
+                        max_tokens: 16000
+                    })
+                });
+
+                if (!response.ok) {
+                    const err = await response.json();
+                    throw new Error(err.error?.message || `API error: ${response.status}`);
+                }
+
+                const data = await response.json();
+                let content = data.choices[0].message.content;
+
+                // Parse resume and cover letter
+                const resumeMatch = content.match(/===RESUME_START===\s*([\s\S]*?)\s*===RESUME_END===/);
+                const coverLetterMatch = content.match(/===COVER_LETTER_START===\s*([\s\S]*?)\s*===COVER_LETTER_END===/);
+
+                if (!resumeMatch || !coverLetterMatch) {
+                    throw new Error('Could not parse response. Please try again.');
+                }
+
+                let resumeCode = resumeMatch[1].trim();
+                let coverLetterText = coverLetterMatch[1].trim();
+
+                // Strip markdown code blocks from resume if present
+                resumeCode = resumeCode.replace(/^```(?:latex|tex)?\s*\n?/i, '').replace(/\n?```\s*$/i, '');
+
+                document.getElementById('output').value = resumeCode;
+                document.getElementById('coverLetterOutput').value = coverLetterText;
+
+                // Switch to resume tab and show it
+                switchTab('resume');
+                showStatus('Resume and cover letter generated successfully!', 'success');
+
+                // Run keyword match
+                runKeywordMatch(jd, resumeCode);
+            } catch (err) {
+                showStatus('Error: ' + err.message, 'error');
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Generate Optimized Resume';
+            }
+        }
+
+        function copyOutput() {
+            let content = '';
+            let filename = '';
+            if (activeTab === 'resume') {
+                content = document.getElementById('output').value;
+                filename = 'resume';
+            } else {
+                content = document.getElementById('coverLetterOutput').value;
+                filename = 'cover_letter';
+            }
+            if (!content) return showStatus('Nothing to copy.', 'error');
+            navigator.clipboard.writeText(content);
+            showStatus('Copied to clipboard!', 'success');
+        }
+
+        function downloadOutput() {
+            let content = '';
+            let filename = '';
+            let mimeType = 'text/plain';
+            if (activeTab === 'resume') {
+                content = document.getElementById('output').value;
+                filename = 'optimized_resume.tex';
+                mimeType = 'text/x-tex';
+            } else {
+                content = document.getElementById('coverLetterOutput').value;
+                filename = 'cover_letter.txt';
+            }
+            if (!content) return showStatus('Nothing to download.', 'error');
+            const blob = new Blob([content], { type: mimeType });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = filename;
+            a.click();
+            URL.revokeObjectURL(a.href);
+            showStatus('Downloaded!', 'success');
+        }
+
+        // Backend API functions
+        async function sendToOverleaf() {
+            const latexCode = document.getElementById('output').value;
+            if (!latexCode) return showStatus('No resume to send.', 'error');
+
+            const btn = document.getElementById('overleafBtn');
+            btn.disabled = true;
+            btn.textContent = '⏳ Sending...';
+            showStatus('Sending resume to Overleaf...', 'loading');
+
+            try {
+                const response = await fetch('http://localhost:3001/api/send-to-overleaf', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ latexCode })
+                });
+
+                if (!response.ok) {
+                    const err = await response.json();
+                    throw new Error(err.error || 'Failed to send to Overleaf');
+                }
+
+                const data = await response.json();
+                showStatus('✓ Resume sent to Overleaf! Check your project.', 'success');
+            } catch (err) {
+                showStatus('Error: ' + err.message, 'error');
+            } finally {
+                btn.disabled = false;
+                btn.textContent = '📤 Overleaf';
+            }
+        }
+
+        function openOverleaf() {
+            const overleafProjectId = '6978a6c44887aa672f4770b6';
+            const url = `https://www.overleaf.com/project/${overleafProjectId}`;
+            window.open(url, '_blank');
+            showStatus('Opening Overleaf project...', 'success');
+        }
+
+        async function saveCoverLetter() {
+            const coverLetterText = document.getElementById('coverLetterOutput').value;
+            if (!coverLetterText) return showStatus('No cover letter to save.', 'error');
+
+            const btn = document.getElementById('googleBtn');
+            btn.disabled = true;
+            btn.textContent = '⏳ Saving...';
+            showStatus('Saving cover letter...', 'loading');
+
+            try {
+                const response = await fetch('http://localhost:3001/api/save-cover-letter', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ coverLetterText })
+                });
+
+                if (!response.ok) {
+                    const err = await response.json();
+                    throw new Error(err.error || 'Failed to save cover letter');
+                }
+
+                const data = await response.json();
+                showStatus('✓ Cover letter saved! Check your project folder.', 'success');
+            } catch (err) {
+                showStatus('Error: ' + err.message, 'error');
+            } finally {
+                btn.disabled = false;
+                btn.textContent = '💾 Save';
+            }
+        }
+
+        // Keyboard shortcut: Ctrl+Enter to generate
+        document.addEventListener('keydown', (e) => {
+            if (e.ctrlKey && e.key === 'Enter') {
+                e.preventDefault();
+                generate();
+            }
+        });
+    </script>
+</body>
+</html>

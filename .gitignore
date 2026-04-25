@@ -1,0 +1,36 @@
+# Dependencies
+node_modules/
+
+# Secrets / credentials
+.google-token.json
+google-credentials.json
+*.pem
+.env
+.env.*
+!.env.example
+
+# Build output
+dist/
+build/
+
+# Personal resume content (each user keeps their own copy locally)
+.overleaf-repo/sample.tex
+.overleaf-repo/pic/
+cover_letter_*.txt
+
+# LaTeX build artifacts
+*.aux
+*.log
+*.out
+*.toc
+*.synctex.gz
+*.fls
+*.fdb_latexmk
+*.bbl
+*.blg
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

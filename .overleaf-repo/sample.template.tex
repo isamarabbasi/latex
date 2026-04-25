@@ -1,0 +1,136 @@
+% This is the template version of the resume.
+% On first setup: copy this file to `sample.tex` and replace the placeholders
+% with your own info. `sample.tex` is gitignored so your edits stay local.
+
+\documentclass[10pt,a4paper,ragged2e,withhyper]{altacv}
+
+% Page layout
+\geometry{left=1.25cm,right=1.25cm,top=1.5cm,bottom=1.5cm,columnsep=1.2cm}
+
+\usepackage{paracol}
+\usepackage{enumitem}
+\usepackage{iftex}
+\usepackage[none]{hyphenat}
+
+% Font setup
+\ifXeTeX
+  \usepackage{fontspec}
+  \setmainfont{Roboto Slab}
+  \setsansfont{Lato}
+  \renewcommand{\familydefault}{\sfdefault}
+\else\ifLuaTeX
+  \usepackage{fontspec}
+  \setmainfont{Roboto Slab}
+  \setsansfont{Lato}
+  \renewcommand{\familydefault}{\sfdefault}
+\else
+  \usepackage[rm]{roboto}
+  \usepackage[defaultsans]{lato}
+  \renewcommand{\familydefault}{\sfdefault}
+\fi\fi
+
+% Make everything ATS-friendly (black text)
+\definecolor{SlateGrey}{HTML}{000000}
+\definecolor{LightGrey}{HTML}{000000}
+\definecolor{DarkBlueGreen}{HTML}{000000}
+\definecolor{BlueGreen}{HTML}{000000}
+\definecolor{GoldenEarth}{HTML}{000000}
+\colorlet{name}{black}
+\colorlet{tagline}{black}
+\colorlet{heading}{black}
+\colorlet{subheading}{black}
+\colorlet{accent}{black}
+\colorlet{emphasis}{black}
+\colorlet{body}{black}
+
+% Custom styles
+\renewcommand{\namefont}{\Huge\bfseries}
+\renewcommand{\personalinfofont}{\footnotesize}
+\renewcommand{\cvsectionfont}{\LARGE\bfseries}
+\renewcommand{\cvsubsectionfont}{\large\bfseries}
+\renewcommand{\cvItemMarker}{{\small\textbullet}}
+\renewcommand{\cvRatingMarker}{\faCircle}
+
+% Bibliography setup
+\usepackage{biblatex}
+\addbibresource{sample.bib}
+
+\begin{document}
+
+%==================== HEADER ====================
+\name{Your Name}
+\tagline{Your Title | Skill 1 \textbullet{} Skill 2 \textbullet{} Skill 3}
+
+% Optional: add a profile photo. Place the image at pic/profile.png and uncomment:
+%\photoR{3cm}{pic/profile.png}
+
+\personalinfo{
+  \email{you@example.com}
+  \phone{+00 000 0000000}
+  \location{City, Country}
+  \linkedin{your-linkedin-handle}
+  \homepage{www.yourwebsite.com}
+}
+
+\makecvheader
+
+%==================== BODY ====================
+\columnratio{0.6}
+\begin{paracol}{2}
+
+%==================== EXPERIENCE ====================
+\cvsection{{Experience}}
+
+\cvevent{Job Title}{Company Name}{Start Date -- End Date}{City, Country}
+\begin{itemize}
+\item Bullet point describing an achievement, responsibility, or impact.
+\item Another bullet point — quantify results where possible.
+\item Tools or technologies used in this role.
+\end{itemize}
+
+\divider
+
+\cvevent{Previous Job Title}{Previous Company}{Start Date -- End Date}{City, Country}
+\begin{itemize}
+\item Achievement or responsibility.
+\item Another achievement.
+\end{itemize}
+
+%==================== RIGHT COLUMN ====================
+\switchcolumn
+
+%==================== EDUCATION ====================
+\cvsection{Education}
+
+\cvevent{Degree Name}{University Name}{Start Date -- End Date}{City, Country}
+Specialization or concentration
+
+\divider
+
+\cvevent{Previous Degree}{University Name}{Start Date -- End Date}{City, Country}
+Specialization
+
+%==================== SKILLS ====================
+\cvsection{Technical Skills}
+\begin{itemize}[label={}]
+    \item \textbf{Category 1}: Skill, Skill, Skill
+    \item \textbf{Category 2}: Skill, Skill, Skill
+    \item \textbf{Category 3}: Skill, Skill, Skill
+\end{itemize}
+
+%==================== CERTIFICATIONS ====================
+\cvsection{Certifications}
+\begin{itemize}
+\item Certification name and issuer
+\item Another certification
+\end{itemize}
+
+%==================== LANGUAGES ====================
+\cvsection{Languages}
+\begin{itemize}[label={}]
+    \item Language - Proficiency
+    \item Language - Proficiency
+\end{itemize}
+
+\end{paracol}
+\end{document}
