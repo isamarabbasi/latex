@@ -1,0 +1,143 @@
+\documentclass[10pt,a4paper,ragged2e,withhyper]{altacv}
+
+\geometry{left=1.2cm,right=1.2cm,top=1.35cm,bottom=1.35cm,columnsep=1.05cm}
+
+\usepackage{paracol}
+\usepackage{enumitem}
+\usepackage{iftex}
+
+% Font setup
+\ifXeTeX
+  \usepackage{fontspec}
+  \setmainfont{Roboto Slab}
+  \setsansfont{Lato}
+  \renewcommand{\familydefault}{\sfdefault}
+\else\ifLuaTeX
+  \usepackage{fontspec}
+  \setmainfont{Roboto Slab}
+  \setsansfont{Lato}
+  \renewcommand{\familydefault}{\sfdefault}
+\else
+  \usepackage[rm]{roboto}
+  \usepackage[defaultsans]{lato}
+  \renewcommand{\familydefault}{\sfdefault}
+\fi\fi
+
+% ATS black styling [cite: 1, 2]
+\definecolor{SlateGrey}{HTML}{000000}
+\colorlet{name}{black}
+\colorlet{tagline}{black}
+\colorlet{heading}{black}
+\colorlet{subheading}{black}
+\colorlet{accent}{black}
+\colorlet{body}{black}
+
+\renewcommand{\namefont}{\Huge\bfseries}
+\renewcommand{\personalinfofont}{\footnotesize}
+\renewcommand{\cvsectionfont}{\Large\bfseries}
+
+\setlist[itemize]{
+leftmargin=*,
+itemsep=2pt,
+topsep=2pt
+}
+
+\begin{document}
+
+%================ HEADER =================
+\name{Samar Hasan Abbasi}
+\tagline{ICT Master's Student | Network Integration • System Security • Embedded Systems}
+
+\personalinfo{
+\email{isamarabbasi@gmail.com}
+\phone{+49 1556 5485343}
+\location{Erlangen, Germany}
+\linkedin{samarabbasi}
+}
+
+\makecvheader
+
+\columnratio{0.60}
+\begin{paracol}{2}
+
+%================ LEFT COLUMN =================
+
+\cvsection{Experience}
+
+\cvevent{FM-NOC Engineer / RAN Operations Engineer}{Nokia}{Oct 2024 -- Aug 2025}{Pakistan}
+\begin{itemize}
+\item Managed 4G/5G RAN operations, focusing on network security and SLA adherence.
+\item Executed L2/L3 fault management and optimized network performance for enhanced throughput.
+\item Collaborated with teams to troubleshoot and improve network infrastructure.
+\end{itemize}
+
+\divider
+
+\cvevent{Content Creator / Video Editor}{Freelance}{Mar 2018 -- Present}{Remote}
+\begin{itemize}
+\item Developed engaging tech content for digital platforms, leveraging Adobe Creative Suite.
+\item Enhanced social media presence through strategic content management and audience engagement.
+\end{itemize}
+
+\divider
+
+\cvevent{Digital Marketing \& Sales Associate}{E-Commerce Client}{Jun 2022 -- Jan 2024}{Remote}
+\begin{itemize}
+\item Achieved 160 sales in 5 months by executing targeted digital marketing strategies.
+\item Analyzed market data to drive product distribution and optimize advertising campaigns.
+\end{itemize}
+
+\divider
+
+\cvevent{Telecommunication Intern}{PTCL}{May 2023 -- Jul 2023}{Pakistan}
+\begin{itemize}
+\item Assisted in fiber optic network maintenance, enhancing service reliability.
+\item Supported technical teams in troubleshooting and optimizing network components.
+\end{itemize}
+
+%================ RIGHT COLUMN =================
+
+\switchcolumn
+
+\cvsection{Education}
+
+\cvevent{M.Sc. Information \& Communication Technology}{FAU Erlangen-Nürnberg}{Oct 2025 -- Present}{Germany}
+\begin{itemize}
+\item Specialization: Embedded Systems, Wireless Networks, IoT, Machine Learning.
+\end{itemize}
+
+\divider
+
+\cvevent{B.Sc. Telecommunication Engineering}{UET Taxila}{Sep 2020 -- Jun 2024}{Pakistan}
+\begin{itemize}
+\item CGPA: 3.05
+\end{itemize}
+
+\cvsection{Projects}
+
+\begin{itemize}
+\item \textbf{SIW Antenna with High Gain} – Engineered high-gain antennas using CST for enhanced wireless applications.
+\item \textbf{Water Quality Monitoring Boat} – Developed an embedded C++ system for automated environmental monitoring.
+\end{itemize}
+
+\cvsection{Technical Skills}
+
+\begin{itemize}[label={}]
+\item \textbf{Networking:} LAN/WAN, WLAN, Firewalls, Network Security
+\item \textbf{Programming:} C++, Python, Embedded C
+\item \textbf{Telecom:} 4G/5G RAN, OSS/NMS, KPI 
+\item \textbf{Embedded:} Microcontrollers, Sensors 
+\item \textbf{Tools:} MATLAB, CST, Selenium, Git 
+\item \textbf{Media:} Premiere Pro, Photoshop, CapCut 
+\end{itemize}
+
+\cvsection{Languages}
+
+\begin{itemize}[label={}]
+\item English --- Fluent 
+\item German --- A2 
+\item Urdu --- Native 
+\end{itemize}
+
+\end{paracol}
+\end{document}
